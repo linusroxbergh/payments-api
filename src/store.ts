@@ -1,4 +1,5 @@
 import { randomBytes } from 'node:crypto';
+import type { EventType } from './webhooks/deliver';
 
 export type Payment = {
   id: string;
@@ -18,9 +19,17 @@ export type Refund = {
   createdAt: string;
 };
 
+export type Endpoint = {
+  id: string;
+  url: string;
+  events: EventType[];
+  secret: string;
+};
+
 export const store = {
   payments: new Map<string, Payment>(),
   refunds: new Map<string, Refund>(),
+  endpoints: new Map<string, Endpoint>(),
 };
 
 export function newId(prefix: string): string {

@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import { charge } from '../processor';
 import { newId, store, type Payment } from '../store';
+import { deliver } from '../webhooks/deliver';
 
 type NewPayment = {
   amount: number;
@@ -34,6 +35,7 @@ payments.post('/', async (c) => {
   store.payments.set(payment.id, payment);
 
   if (!result.ok) return c.json({ error: result.reason, payment }, 402);
+  await deliver('payment.succeeded', payment);
   return c.json(payment, 201);
 });
 
