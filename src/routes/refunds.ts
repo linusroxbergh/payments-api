@@ -1,5 +1,6 @@
 import { Hono } from 'hono';
 import { newId, store, type Refund } from '../store';
+import { deliver } from '../webhooks/deliver';
 
 export const refunds = new Hono();
 
@@ -17,5 +18,6 @@ refunds.post('/', async (c) => {
   payment.refunded += value;
   const refund: Refund = { id: newId('re'), paymentId, amount: value, createdAt: new Date().toISOString() };
   store.refunds.set(refund.id, refund);
+  await deliver('refund.succeeded', { ...refund, reference: payment.reference });
   return c.json(refund, 201);
 });
