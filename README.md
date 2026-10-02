@@ -30,3 +30,4 @@ Events go out as a `POST` with a `fernhill-signature: t=<unix seconds>,v1=<hex>`
 | Event | When |
 | --- | --- |
 | `payment.succeeded` | A charge went through |
+| `refund.succeeded` | A refund went through; carries the payment's order `reference` |

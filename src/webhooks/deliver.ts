@@ -1,7 +1,7 @@
 import { newId, store } from '../store';
 import { sign } from './sign';
 
-export const EVENT_TYPES = ['payment.succeeded'] as const;
+export const EVENT_TYPES = ['payment.succeeded', 'refund.succeeded'] as const;
 export type EventType = (typeof EVENT_TYPES)[number];
 
 export async function deliver(type: EventType, data: unknown): Promise<void> {

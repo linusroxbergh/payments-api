@@ -41,4 +41,21 @@ describe('webhooks', () => {
     expect(JSON.parse(hit.body)).toMatchObject({ type: 'payment.succeeded', data: { amount: 2400 } });
     expect(verify(hit.body, String(hit.headers['fernhill-signature']), endpoint.secret)).toBe(true);
   });
+
+  it('sends a signed refund.succeeded with the order reference', async () => {
+    const endpoint = (await (await post('/webhook-endpoints', { url, events: ['refund.succeeded'] })).json()) as {
+      secret: string;
+    };
+    const payment = (await (
+      await post('/payments', { amount: 5600, currency: 'usd', source: 'tok_test_4242', reference: 'FH-310877' })
+    ).json()) as { id: string };
+    await post('/refunds', { paymentId: payment.id, amount: 1800 });
+
+    const hit = received.at(-1)!;
+    expect(JSON.parse(hit.body)).toMatchObject({
+      type: 'refund.succeeded',
+      data: { paymentId: payment.id, amount: 1800, reference: 'FH-310877' },
+    });
+    expect(verify(hit.body, String(hit.headers['fernhill-signature']), endpoint.secret)).toBe(true);
+  });
 });
